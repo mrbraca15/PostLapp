@@ -1,0 +1,8 @@
+{
+    "apps": [
+        {
+            "name": "PostLapp",
+            "script": "./build/App.js"
+        }
+    ]
+}

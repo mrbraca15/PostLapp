@@ -1,4 +1,5 @@
 import { createConnection, Connection } from "typeorm";
+import { Enviroment } from "./Enviroment";
 
 export class MySqlConnector {
 
@@ -8,8 +9,8 @@ export class MySqlConnector {
                 type: "mysql",
                 host: "localhost",
                 port: 3306,
-                username: "root",
-                //    password: "admin",
+                username: Enviroment.DATABASE_USERNAME,
+                password: Enviroment.DATABASE_PASSWORD,
                 database: "postlapp",
                 entities: [
                     __dirname + "/entities/*"
