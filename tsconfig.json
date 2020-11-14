@@ -1,0 +1,28 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "target": "ES5",
+    "module": "commonjs",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es6"
+    ],
+    "sourceMap": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "declaration": false,
+    "outDir": "build"
+  },
+  "include": [
+    "src/**/*",
+    "spec/**/*"
+  ],
+  "exclude": []
+}
