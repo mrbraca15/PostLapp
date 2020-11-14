@@ -13,8 +13,3 @@ userRoutes.post('/signIn', (request: Request, response: Response) => {
     userService.signIn(request, response);
 });
 
-userRoutes.get('/hola', (request: Request, response: Response) => {
-    response.send("ok");
-});
-
-

@@ -35,7 +35,7 @@ export class SecurityException {
             this.message = "No Authorized";
         }
 
-        this.code = 403;
+        this.code = 401;
         Error.apply(this, arguments);
     }
 }

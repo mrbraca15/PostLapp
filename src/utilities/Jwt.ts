@@ -1,6 +1,6 @@
 import { sign, verify, TokenExpiredError } from "jsonwebtoken";
 import { User } from "../entities/User";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { ClientMessageException } from "../exceptions/Exeptions";
 
 const SECRET_KEY: string = "@T45l4Pp#";
@@ -40,29 +40,27 @@ export class Jwt {
 
 
 
-    validateToken(request: Request | string, response: Response): Promise<User> {
-        return new Promise((resolve: any, reject: any) => {
-            try {
-                let token: string;
+    validateToken(request: Request, response: Response, next: NextFunction) {
+        try {
+            let token: string;
 
-                if (typeof request == "string") {
-                    token = request;
-                } else {
-                    token = request.header("Authorization");
-                }
-
-                let obj: any = verify(token, SECRET_KEY);
-                resolve(obj);
-
-            } catch (error) {
-                if (error instanceof TokenExpiredError) {
-                    response.status(401).send(new ClientMessageException("Your session has expired.", EXPIRED_ERROR_CODE));
-
-                } else {
-                    response.status(403).send(new ClientMessageException("You need sign up to access to this content", OTHER_SECURITY_ERROR));
-                }
+            if (typeof request == "string") {
+                token = request;
+            } else {
+                token = request.header("Authorization");
             }
-        });
+
+            let obj: any = verify(token, SECRET_KEY);
+            request["userId"] = obj.id;
+            next();
+        } catch (error) {
+            if (error instanceof TokenExpiredError) {
+                response.status(401).send(new ClientMessageException("Your session has expired.", EXPIRED_ERROR_CODE));
+
+            } else {
+                response.status(403).send(new ClientMessageException("You need sign up to access to this content", OTHER_SECURITY_ERROR));
+            }
+        }
     }
 
 
