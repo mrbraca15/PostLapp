@@ -7,9 +7,14 @@ export class User {
     id: number;
 
     @Column({
-        name: "nick_name"
+        name: "user_name"
     })
-    nickName: string;
+    userName: string;
+
+    @Column({
+        name: "email"
+    })
+    email: string;
 
     @Column()
     password: string;
@@ -20,3 +25,4 @@ export class User {
     creationDate: Date;
 
 }
+

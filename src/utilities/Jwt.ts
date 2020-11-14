@@ -22,12 +22,12 @@ export class Jwt {
         try {
             if (!user) throw new Error("Usuario Invalido");
 
-            let obj = { id: user.id, nickName: user.nickName };
+            let obj = { id: user.id, nickName: user.userName, email: user.email };
 
             let token: string = sign(
                 obj,
                 SECRET_KEY,
-                { expiresIn: "1 days" },
+                { expiresIn: "1h" },
             );
 
             return token;

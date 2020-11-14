@@ -5,6 +5,7 @@ import { UserFacade } from "../facade/UserFacade";
 import { ClientMessageException, DataValidationException, SecurityException, UnexpectedException } from "../exceptions/Exeptions";
 import { compare } from "bcrypt-nodejs";
 import { HttpErrorEnum } from "../enumerations/HttpErrorEnum";
+import { registerUserValidation, signInValidator } from "../schemas/UserSchema";
 
 export class UserService {
 
@@ -19,22 +20,21 @@ export class UserService {
     async signIn(request: Request, response: Response) {
 
         try {
-            if (!request.body.nickName) throw new DataValidationException("The nickname is required");
-            if (!request.body.password) throw new DataValidationException("The password is required");
+            const { value, error } = signInValidator.validate(request.body);
+            if (error) throw new DataValidationException(error.message);
 
-            const NICK_NAME = request.body.nickName.toLowerCase().trim();
-            const PASSWORD = request.body.password;
+            const EMAIL =value.email.toLowerCase().trim();
+            const PASSWORD =value.password;
 
-            let user: User = await this.userFacade.getUserByNickName(NICK_NAME);
+            let user: User = await this.userFacade.getUserEmail(EMAIL);
 
-            if (!user) throw new SecurityException("User or password incorrect");
+            if (!user) throw new SecurityException("Usuario o contraseña incorrecta");
 
             compare(PASSWORD, user.password, (error: Error, result: boolean) => {
-
                 if (!error && result) {
                     response.send({
                         user: {
-                            nickName: user.nickName
+                            userName: user.userName
                         },
                         token: this.jwt.generateToken(user)
                     })
@@ -58,16 +58,16 @@ export class UserService {
 
         try {
             const userUp: User = new User();
+            const { value, error } = registerUserValidation.validate(request.body);
+            if (error) throw new DataValidationException(error.message);
+            let user: User = value;
 
-            if (!request.body.nickName) throw new DataValidationException("The nickname is required");
-            if (!request.body.password) throw new DataValidationException("The password is required");
+            userUp.password = user.password;
+            userUp.userName = user.userName.toLowerCase();
+            userUp.email = user.email;
+            let userNameUser: User = await this.userFacade.getUserEmail(userUp.email);
 
-            userUp.password = request.body.password;
-            userUp.nickName = request.body.nickName.toLowerCase();
-
-            let nickNameUser: User = await this.userFacade.getUserByNickName(userUp.nickName);
-
-            if (nickNameUser) throw new SecurityException("El usuario " + userUp.nickName + " ya está en uso");
+            if (userNameUser) throw new SecurityException("El usuario " + userUp.email + " ya está en uso");
 
             this.userFacade.add(userUp).then(() => {
                 response.send({});
